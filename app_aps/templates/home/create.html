@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UNIP | APS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="https://flowbite.com/docs/images/logo.svg">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+    {% load static %}
+</head>
+<body>
+    <nav class="bg-white border-b border-gray-200">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
+            <a href="https://flowbite.com" class="flex items-center">
+                <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo" />
+                <span class="self-center text-2xl font-bold whitespace-nowrap">APS IV</span>
+            </a>
+            {% comment %} <div class="flex items-center">
+                <a href="#" class="text-sm text-black hover:underline">Entrar</a>
+            </div> {% endcomment %}
+        </div>
+    </nav>
+    <nav class="bg-gray-50 border-b border-gray-200">
+        <div class="max-w-screen-xl px-4 py-3 mx-auto">
+            <div class="flex items-center">
+                <ul class="flex flex-row font-medium mt-0 mr-6 space-x-8 text-sm">
+                    <li>
+                        <a href="/" class="text-gray-900 hover:underline" aria-current="page">Home</a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-900 hover:underline">Imagens</a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-900 hover:underline">Fila</a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-900 hover:underline">Pilha</a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-900 hover:underline">Lista</a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-900 hover:underline">Árvore</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="px-4 py-8 max-w-screen-xl mx-auto">
+        <div class="flex justify-between items-cecnter mb-4">
+            <h2 class="text-2xl font-bold">Criar nova localização</h2>
+        </div>
+
+        <form action="{% url 'home' %}" method="post">
+            <div class="mb-6">
+              <label for="image_name" class="block mb-2 text-sm font-medium text-gray-900">Nome da imagem</label>
+              <input type="text" name="image_name" id="image_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Cerrado Goiano">
+            </div>
+            <div class="grid md:grid-cols-3 md:gap-6">
+                <div class="mb-6">
+                  <label for="latitude" class="block mb-2 text-sm font-medium text-gray-900">Latitude</label>
+                  <input type="text" name="latitude" id="latitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="-16.7501206">
+                </div>
+                <div class="mb-6">
+                  <label for="longitude" class="block mb-2 text-sm font-medium text-gray-900">Longitude</label>
+                  <input type="text" name="longitude" id="longitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="-49.213212">
+                </div>
+                <div class="mb-6">
+                  <label for="altitude" class="block mb-2 text-sm font-medium text-gray-900">Altitude</label>
+                  <input type="text" name="altitude" id="altitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="15z">
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-center w-full mb-6">
+                <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                        </svg>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                        <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                    </div>
+                    <input id="dropzone-file" type="file" class="hidden" />
+                </label>
+            </div> 
+
+            <button type="button" onclick="window.location.href='http://127.0.0.1:8000/'" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center float-right">Salvar</button>
+            <button type="submit" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 float-left">Voltar</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+</body>
+</html>
