@@ -12,51 +12,23 @@
         * {
             font-family: 'Inter', sans-serif;
         }
+        #image-container > img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
     {% load static %}
 </head>
 <body>
-    <nav class="bg-white border-b border-gray-200">
-        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
-            <a href="https://flowbite.com" class="flex items-center">
-                <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo" />
-                <span class="self-center text-2xl font-bold whitespace-nowrap">APS IV</span>
-            </a>
-        </div>
-    </nav>
-    <nav class="bg-gray-50 border-b border-gray-200">
-        <div class="max-w-screen-xl px-4 py-3 mx-auto">
-            <div class="flex items-center">
-                <ul class="flex flex-row font-medium mt-0 mr-6 space-x-8 text-sm">
-                    <li>
-                        <a href="/" class="text-gray-900 hover:underline" aria-current="page">Home</a>
-                    </li>
-                    <li>
-                        <a href="#" class="text-gray-900 hover:underline">Imagens</a>
-                    </li>
-                    <li>
-                        <a href="#" class="text-gray-900 hover:underline">Fila</a>
-                    </li>
-                    <li>
-                        <a href="#" class="text-gray-900 hover:underline">Pilha</a>
-                    </li>
-                    <li>
-                        <a href="#" class="text-gray-900 hover:underline">Lista</a>
-                    </li>
-                    <li>
-                        <a href="#" class="text-gray-900 hover:underline">Árvore</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {% include 'shared/nav.html' %}
     
     <div class="px-4 py-8 max-w-screen-xl mx-auto">
         <div class="flex justify-between items-cecnter mb-4">
             <h2 class="text-2xl font-bold">Criar nova localização</h2>
         </div>
 
-        <form method="post" action="create">
+        <form method="post" action="{% url 'store' %}">
             {% csrf_token %}
             <div class="mb-6">
               <label for="image_name" class="block mb-2 text-sm font-medium text-gray-900">Nome da imagem</label>
@@ -77,7 +49,7 @@
                 </div>
             </div>
             
-            <!-- <div class="flex items-center justify-center w-full mb-6">
+            <div class="flex items-center justify-center w-full mb-6 ui-container1">
                 <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                         <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
@@ -86,15 +58,53 @@
                         <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
                         <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                     </div>
-                    <input id="dropzone-file" name="image" type="file" class="hidden" />
+                    <input id="dropzone-file" type="file" class="hidden" />
                 </label>
-            </div>  -->
+            </div> 
+            
+            <div class="flex items-center imageInput justify-center w-full mb-6 ui-container2">
+                <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
+                    <div id="image-container" class="w-full h-full p-5"></div>
+                </label>
+            </div> 
 
-            <button type="button" onclick="window.location.href='http://127.0.0.1:8000/'" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center float-right">Salvar</button>
-            <button type="submit" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 float-left">Voltar</button>
+            <button type="button" onclick="window.location.href='http://127.0.0.1:8000/'" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 float-left">Voltar</button>
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center float-right">Salvar</button>
         </form>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+    <script>
+        const fileInput = document.getElementById('dropzone-file');
+        const imageContainer = document.getElementById('image-container');
+        var uiContainer1 = document.querySelector('.ui-container1');
+        var uiContainer2 = document.querySelector('.ui-container2');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (uiContainer2) {
+                uiContainer2.classList.add('hidden');
+            }
+        });
+
+        fileInput.addEventListener('change', function () {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const image = new Image();
+                if (uiContainer1) {
+                    uiContainer1.classList.add('hidden');
+                }
+                if (uiContainer2) {
+                    uiContainer2.classList.remove('hidden');
+                }
+
+                image.src = URL.createObjectURL(file);
+                // image.width = 100 ;
+                // image.height = 100;
+
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(image);
+            }
+        });
+    </script>
 </body>
 </html>
