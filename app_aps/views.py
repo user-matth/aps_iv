@@ -47,7 +47,7 @@ def home(request):
         else:
             encoded_images.append(None)
 
-    return render(request, 'home/home.html', {'geolocalizacoes': pagina_atual, 'encoded_images': encoded_images, 'pagina_atual': pagina_atual})
+    return render(request, 'home/home.html', {'geolocalizacoes': pagina_atual, 'encoded_images': encoded_images, 'pagina_atual': pagina_atual, 'amout': geolocalizacoes.count()})
 
 @csrf_protect
 def create(request):
