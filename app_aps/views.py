@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import GeoLocalizacao
+from .models import GeoLocalizacao, TreeNode
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect
 from faker import Faker
@@ -13,8 +13,9 @@ from django.http import JsonResponse
 import base64
 from queue import Queue
 import time
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from queue import LifoQueue
+from operator import attrgetter
 
 image_width = 640
 image_height = 480
@@ -107,28 +108,10 @@ class GeoLocation:
         self.longitude = longitude
         self.altitude = altitude
 
-# def fila(request):
-#     fila = Queue()
-
-#     geolocalizacoes = GeoLocalizacao.objects.all()
-
-#     for loc in geolocalizacoes:
-#         fila.put(GeoLocation(loc.image_name, loc.latitude, loc.longitude, loc.altitude))
-
-#     tempo_inicial = time.time()
-
-#     elementos_ordenados = []
-#     while not fila.empty():
-#         elementos_ordenados.append(fila.get())
-#     elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: loc.altitude)
-
-#     tempo_final = time.time()
-
-#     tempo_decorrido = tempo_final - tempo_inicial
-
-#     return render(request, 'fila/fila.html', {'elementos_ordenados': elementos_ordenados, 'tempo_decorrido': tempo_decorrido, 'amount': geolocalizacoes.count()})
+# FILA
 
 def fila(request):
+    tempo_inicial = time.time()
     fila = Queue()
 
     geolocalizacoes = GeoLocalizacao.objects.all()
@@ -136,7 +119,6 @@ def fila(request):
     for loc in geolocalizacoes:
         fila.put(GeoLocation(loc.image_name, loc.latitude, loc.longitude, loc.altitude))
 
-    tempo_inicial = time.time()
 
     elementos_ordenados = []
     while not fila.empty():
@@ -165,13 +147,13 @@ def fila(request):
     return render(request, 'fila/fila.html', {'elementos_ordenados': pagina_atual, 'tempo_decorrido': tempo_decorrido, 'amount': geolocalizacoes.count(), 'pagina_atual': pagina_atual})
 
 def pilha(request):
+    tempo_inicial = time.time()
     geolocalizacoes = GeoLocalizacao.objects.all()
 
     pilha = LifoQueue()
     for loc in geolocalizacoes:
         pilha.put(loc)
 
-    tempo_inicial = time.time()
 
     elementos_ordenados = []
     while not pilha.empty():
@@ -199,3 +181,91 @@ def pilha(request):
         pagina_atual = paginator.page(paginator.num_pages)
 
     return render(request, 'pilha/pilha.html', {'elementos_ordenados': pagina_atual, 'tempo_decorrido': tempo_decorrido, 'amount': geolocalizacoes.count(), 'pagina_atual': pagina_atual})
+
+# LISTA
+
+def lista(request):
+    tempo_inicial = time.time()
+    elementos = GeoLocalizacao.objects.all()
+
+    elementos_ordenados = sorted(elementos, key=attrgetter('image_name'))
+
+    items_por_pagina = 10
+    paginator = Paginator(elementos_ordenados, items_por_pagina)
+
+    try:
+        numero_pagina = int(request.GET.get('page', 1))
+        if numero_pagina < 1:
+            raise ValueError
+    except ValueError:
+        numero_pagina = 1
+
+    try:
+        pagina_atual = paginator.page(numero_pagina)
+    except EmptyPage:
+        pagina_atual = paginator.page(paginator.num_pages)
+        
+    tempo_final = time.time()
+    tempo_decorrido = tempo_final - tempo_inicial
+
+    return render(request, 'lista/lista.html', {
+        'elementos_ordenados': pagina_atual,
+        'tempo_decorrido': tempo_decorrido,
+        'amount': elementos.count(),
+        'pagina_atual': pagina_atual,
+    })
+    
+# ARVORE BINARIA
+
+class Node:
+    def __init__(self, elemento):
+        self.elemento = elemento
+        self.left = None
+        self.right = None
+
+def insert(root, elemento):
+    if root is None:
+        return Node(elemento)
+    if elemento.altitude < root.elemento.altitude:
+        root.left = insert(root.left, elemento)
+    else:
+        root.right = insert(root.right, elemento)
+    return root
+
+def in_order_traversal(root):
+    if root:
+        yield from in_order_traversal(root.left)
+        yield root.elemento
+        yield from in_order_traversal(root.right)
+        
+def arvore(request):
+    tempo_inicial = time.time()
+    elementos = GeoLocalizacao.objects.all()
+
+    root = None
+
+    for elemento in elementos:
+        root = insert(root, elemento)
+
+    elementos_ordenados = list(in_order_traversal(root))
+
+    items_per_page = 10
+
+    paginator = Paginator(elementos_ordenados, items_per_page)
+
+    page = request.GET.get('page')
+
+    try:
+        elementos_ordenados = paginator.page(page)
+    except PageNotAnInteger:
+        elementos_ordenados = paginator.page(1)
+    except EmptyPage:
+        elementos_ordenados = paginator.page(paginator.num_pages)
+
+    tempo_final = time.time()
+    tempo_decorrido = tempo_final - tempo_inicial
+
+    return render(request, 'arvore/arvore.html', {
+        'elementos_ordenados': elementos_ordenados,
+        'tempo_decorrido': tempo_decorrido,
+    })
