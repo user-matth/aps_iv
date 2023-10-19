@@ -46,8 +46,29 @@ def home(request):
             encoded_images.append(encoded_image)
         else:
             encoded_images.append(None)
+    
+    results = {
+        'Fila': fila_res(),
+        'Pilha': pilha_res(),
+        'Lista': lista_res(),
+        'Arvore': arvore_res(),
+    }
 
-    return render(request, 'home/home.html', {'geolocalizacoes': pagina_atual, 'encoded_images': encoded_images, 'pagina_atual': pagina_atual, 'amout': geolocalizacoes.count()})
+    lowest_key = min(results, key=results.get)
+    lowest_value = results[lowest_key]
+
+    return render(request, 'home/home.html', {
+        'geolocalizacoes' : pagina_atual, 
+        'encoded_images' : encoded_images, 
+        'pagina_atual' : pagina_atual, 
+        'amout' : geolocalizacoes.count(),
+        'fila_res' : fila_res(),
+        'pilha_res' : pilha_res(),
+        'lista_res' : lista_res(),
+        'arvore_res' : arvore_res(),
+        'lowest_value' : lowest_value,
+        'lowest_key' : lowest_key,
+    })
 
 @csrf_protect
 def create(request):
@@ -101,14 +122,14 @@ def fill_database_with_fake_data(request):
         location.save()
     return render(request, 'home/home.html')
 
+# FILA
+
 class GeoLocation:
     def __init__(self, image_name, latitude, longitude, altitude):
         self.image_name = image_name
         self.latitude = latitude
         self.longitude = longitude
         self.altitude = altitude
-
-# FILA
 
 def fila(request):
     tempo_inicial = time.time()
@@ -126,7 +147,6 @@ def fila(request):
     elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: loc.altitude)
 
     tempo_final = time.time()
-
     tempo_decorrido = tempo_final - tempo_inicial
 
     items_por_pagina = 10
@@ -145,6 +165,8 @@ def fila(request):
         pagina_atual = paginator.page(paginator.num_pages)
 
     return render(request, 'fila/fila.html', {'elementos_ordenados': pagina_atual, 'tempo_decorrido': tempo_decorrido, 'amount': geolocalizacoes.count(), 'pagina_atual': pagina_atual})
+
+# PILHA
 
 def pilha(request):
     tempo_inicial = time.time()
@@ -269,3 +291,85 @@ def arvore(request):
         'elementos_ordenados': elementos_ordenados,
         'tempo_decorrido': tempo_decorrido,
     })
+    
+    
+def fila_res():
+    tempo_inicial = time.time()
+    fila = Queue()
+
+    geolocalizacoes = GeoLocalizacao.objects.all()
+
+    for loc in geolocalizacoes:
+        fila.put(GeoLocation(loc.image_name, loc.latitude, loc.longitude, loc.altitude))
+
+    elementos_ordenados = []
+    while not fila.empty():
+        elementos_ordenados.append(fila.get())
+    elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: loc.altitude)
+
+    tempo_final = time.time()
+    tempo_decorrido = tempo_final - tempo_inicial
+    tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
+
+    return (tempo_decorrido_formatted)
+
+def pilha_res():
+    tempo_inicial = time.time()
+    geolocalizacoes = GeoLocalizacao.objects.all()
+
+    pilha = LifoQueue()
+    for loc in geolocalizacoes:
+        pilha.put(loc)
+
+
+    elementos_ordenados = []
+    while not pilha.empty():
+        elementos_ordenados.append(pilha.get())
+
+    elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: len(loc.image_blob) if loc.image_blob else 0)
+
+    tempo_final = time.time()
+    tempo_decorrido = tempo_final - tempo_inicial
+    tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
+
+    return (tempo_decorrido_formatted)
+
+
+def lista_res():
+    # tempo_inicial = time.time()
+    # elementos = GeoLocalizacao.objects.all()
+        
+    # tempo_final = time.time()
+    # tempo_decorrido = tempo_final - tempo_inicial
+    # tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
+
+    # return (tempo_decorrido_formatted)
+    tempo_inicial = time.time()
+    elementos = GeoLocalizacao.objects.all()
+    
+    elementos_ordenados = sorted(elementos, key=lambda loc: len(loc.image_blob) if loc.image_blob else 0)
+    
+    tempo_final = time.time()
+    tempo_decorrido = tempo_final - tempo_inicial
+    
+    tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
+    
+    return tempo_decorrido_formatted
+
+
+def arvore_res():
+    tempo_inicial = time.time()
+    elementos = GeoLocalizacao.objects.all()
+
+    root = None
+
+    for elemento in elementos:
+        root = insert(root, elemento)
+
+    elementos_ordenados = list(in_order_traversal(root))
+
+    tempo_final = time.time()
+    tempo_decorrido = tempo_final - tempo_inicial
+    tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
+
+    return (tempo_decorrido_formatted)
