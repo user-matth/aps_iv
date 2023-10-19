@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import GeoLocalizacao, TreeNode
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect
@@ -72,13 +72,28 @@ def home(request):
 
 @csrf_protect
 def create(request):
-    print(request)
-    if request.method == 'POST':
-        print('aquuuuuuuuuuui')
-    else:
-        form = GeoLocalizacao()
-    return render(request, 'home/create.html', {'form': form})
+    return render(request, 'home/create.html')
 
+@csrf_protect
+def update(request, id):
+    location = get_object_or_404(GeoLocalizacao, id=id)
+    if request.method == 'POST':
+        location_id = request.POST.get('location_id')
+        location.image_name = request.POST['image_name']
+        location.latitude = request.POST['latitude']
+        location.longitude = request.POST['longitude']
+        location.altitude = request.POST['altitude']
+        location.save()
+        return redirect('home')
+
+    return render(request, 'home/update.html', {'location': location})
+
+def delete(request, id):
+    geo_localizacao = get_object_or_404(GeoLocalizacao, id=id)
+    geo_localizacao.delete()
+    return redirect('home')
+
+@csrf_protect
 def store(request):
     if request.method == 'POST':
         # image = request.FILES['image_blob']
@@ -99,6 +114,21 @@ def store(request):
         location.save()
     return render(request, 'home/store.html')
 
+def patch(request, id):
+    location = get_object_or_404(GeoLocalizacao, id=id)
+
+    if request.method == 'POST':
+        # Retrieve the ID from the form data
+        location_id = request.POST.get('location_id')
+        location.image_name = request.POST['image_name']
+        location.latitude = request.POST['latitude']
+        location.longitude = request.POST['longitude']
+        location.altitude = request.POST['altitude']
+        location.save()
+        return redirect('success_url')  # Redirect to a success page
+
+    return render(request, 'update_template.html', {'location': location})
+    return render(request, 'home/patch.html')
 
 def generate_fake_image_data(width, height, format):
     image = Image.new('RGB', (width, height))
@@ -140,7 +170,6 @@ def fila(request):
     for loc in geolocalizacoes:
         fila.put(GeoLocation(loc.image_name, loc.latitude, loc.longitude, loc.altitude))
 
-
     elementos_ordenados = []
     while not fila.empty():
         elementos_ordenados.append(fila.get())
@@ -175,7 +204,6 @@ def pilha(request):
     pilha = LifoQueue()
     for loc in geolocalizacoes:
         pilha.put(loc)
-
 
     elementos_ordenados = []
     while not pilha.empty():
@@ -270,11 +298,8 @@ def arvore(request):
         root = insert(root, elemento)
 
     elementos_ordenados = list(in_order_traversal(root))
-
     items_per_page = 10
-
     paginator = Paginator(elementos_ordenados, items_per_page)
-
     page = request.GET.get('page')
 
     try:
@@ -321,7 +346,6 @@ def pilha_res():
     for loc in geolocalizacoes:
         pilha.put(loc)
 
-
     elementos_ordenados = []
     while not pilha.empty():
         elementos_ordenados.append(pilha.get())
@@ -336,22 +360,13 @@ def pilha_res():
 
 
 def lista_res():
-    # tempo_inicial = time.time()
-    # elementos = GeoLocalizacao.objects.all()
-        
-    # tempo_final = time.time()
-    # tempo_decorrido = tempo_final - tempo_inicial
-    # tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
-
-    # return (tempo_decorrido_formatted)
     tempo_inicial = time.time()
-    elementos = GeoLocalizacao.objects.all()
     
+    elementos = GeoLocalizacao.objects.all()
     elementos_ordenados = sorted(elementos, key=lambda loc: len(loc.image_blob) if loc.image_blob else 0)
     
     tempo_final = time.time()
     tempo_decorrido = tempo_final - tempo_inicial
-    
     tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
     
     return tempo_decorrido_formatted

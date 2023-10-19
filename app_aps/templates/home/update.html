@@ -25,27 +25,28 @@
     
     <div class="px-4 py-8 max-w-screen-xl mx-auto">
         <div class="flex justify-between items-cecnter mb-4">
-            <h2 class="text-2xl font-bold">Criar nova localização</h2>
+            <h2 class="text-2xl font-bold">Atualizar localização</h2>
         </div>
 
-        <form method="post" action="{% url 'store' %}">
+        <form method="post" action="{% url 'update' location.id %}">
             {% csrf_token %}
+            <input type="hidden" name="location_id" value="{{ location.id }}">
             <div class="mb-6">
               <label for="image_name" class="block mb-2 text-sm font-medium text-gray-900">Nome da imagem</label>
-              <input type="text" name="image_name" id="image_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Cerrado Goiano">
+              <input type="text" name="image_name" value="{{ location.image_name }}" id="image_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Cerrado Goiano">
             </div>
             <div class="grid md:grid-cols-3 md:gap-6">
                 <div class="mb-6">
                   <label for="latitude" class="block mb-2 text-sm font-medium text-gray-900">Latitude</label>
-                  <input type="text" name="latitude" id="latitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="-16.7501206">
+                  <input type="text" name="latitude" value="{{ location.latitude }}" id="latitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="-16.7501206">
                 </div>
                 <div class="mb-6">
                   <label for="longitude" class="block mb-2 text-sm font-medium text-gray-900">Longitude</label>
-                  <input type="text" name="longitude" id="longitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="-49.213212">
+                  <input type="text" name="longitude" value="{{ location.longitude }}" id="longitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="-49.213212">
                 </div>
                 <div class="mb-6">
                   <label for="altitude" class="block mb-2 text-sm font-medium text-gray-900">Altitude</label>
-                  <input type="text" name="altitude" id="altitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="15z">
+                  <input type="text" name="altitude" value="{{ location.altitude }}" id="altitude" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="15z">
                 </div>
             </div>
             
