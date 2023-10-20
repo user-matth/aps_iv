@@ -19,6 +19,10 @@ If your project is already cloned first install django by running
 
     $ pip install django
 
+Get the main dependencies used on the project
+
+    $ pip install faker && pip install pillow && pip install requests && pip freeze > requirements.txt
+
 Then simply apply the migrations:
 
     $ python3 manage.py makemigrations && python3 manage.py migrate
