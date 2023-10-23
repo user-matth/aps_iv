@@ -24,11 +24,12 @@
     {% include 'shared/nav.html' %}
     
     <div class="px-4 py-8 max-w-screen-xl mx-auto">
-        <div class="flex justify-between items-cecnter mb-4">
+        <div class="flex justify-between mb-4">
             <h2 class="text-2xl font-bold">Atualizar localização</h2>
+            <button id="toggle-button" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-red-900 focus:outline-none bg-white rounded-lg border border-red-900 hover:bg-red-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-200 float-left">Excluir imagem</button>
         </div>
 
-        <form method="post" action="{% url 'update' location.id %}">
+        <form method="post" action="{% url 'update' location.id %}" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="location_id" value="{{ location.id }}">
             <div class="mb-6">
@@ -50,7 +51,7 @@
                 </div>
             </div>
             
-            <div class="flex items-center justify-center w-full mb-6 ui-container1">
+            <div class="flex items-center justify-center w-full mb-6 ui-container1" id="container1">
                 <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                         <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
@@ -59,13 +60,15 @@
                         <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
                         <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                     </div>
-                    <input id="dropzone-file" type="file" class="hidden" />
+                    <input id="dropzone-file" name="image" type="file" class="hidden" />
                 </label>
             </div> 
             
-            <div class="flex items-center imageInput justify-center w-full mb-6 ui-container2">
+            <div class="flex items-center imageInput justify-center w-full mb-6 ui-container2" id="container2" >
                 <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
-                    <div id="image-container" class="w-full h-full p-5"></div>
+                    <div id="image-container" class="w-full h-full p-5">
+                        <img src="{{ location.image.url }}" alt="{{ location.image_name }}" class="object-cover">
+                    </div>
                 </label>
             </div> 
 
@@ -76,34 +79,48 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
     <script>
-        const fileInput = document.getElementById('dropzone-file');
-        const imageContainer = document.getElementById('image-container');
-        var uiContainer1 = document.querySelector('.ui-container1');
-        var uiContainer2 = document.querySelector('.ui-container2');
-
         document.addEventListener('DOMContentLoaded', function () {
-            if (uiContainer2) {
-                uiContainer2.classList.add('hidden');
+            const toggleButton = document.getElementById('toggle-button');
+            const container1 = document.getElementById('container1');
+            const container2 = document.getElementById('container2');
+            const fileInput = document.getElementById('dropzone-file');
+            const imageContainer = document.getElementById('image-container');
+
+            container1.style.display = 'none';
+            if (toggleButton) {
+                toggleButton.addEventListener('click', function () {
+                    if (container2.style.display === 'none') {
+                        container1.style.display = 'none';
+                        container2.style.display = 'block';
+                    } else {
+                        container1.style.display = 'block';
+                        container2.style.display = 'none';
+                    }
+                });
             }
-        });
-
-        fileInput.addEventListener('change', function () {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const image = new Image();
-                if (uiContainer1) {
-                    uiContainer1.classList.add('hidden');
-                }
-                if (uiContainer2) {
-                    uiContainer2.classList.remove('hidden');
-                }
-
-                image.src = URL.createObjectURL(file);
-                // image.width = 100 ;
-                // image.height = 100;
-
-                imageContainer.innerHTML = '';
-                imageContainer.appendChild(image);
+    
+            if (fileInput) {
+                fileInput.addEventListener('change', function () {
+                    if (fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+                        const image = new Image();
+    
+                        if (container1) {
+                            container1.style.display = 'none';
+                        }
+                        if (container2) {
+                            container2.style.display = 'block';
+                        }
+    
+                        image.src = URL.createObjectURL(file);
+                        // You can set image width and height here if needed
+                        // image.width = 100;
+                        // image.height = 100;
+    
+                        imageContainer.innerHTML = '';
+                        imageContainer.appendChild(image);
+                    }
+                });
             }
         });
     </script>

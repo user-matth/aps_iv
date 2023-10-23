@@ -28,7 +28,7 @@
             <h2 class="text-2xl font-bold">Criar nova localização</h2>
         </div>
 
-        <form method="post" action="{% url 'create' %}">
+        <form method="post" action="{% url 'create' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="mb-6">
               <label for="image_name" class="block mb-2 text-sm font-medium text-gray-900">Nome da imagem</label>
@@ -58,7 +58,7 @@
                         <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
                         <p class="text-xs text-gray-500">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                     </div>
-                    <input id="dropzone-file" type="file" class="hidden" />
+                    <input id="dropzone-file" name="image" type="file" class="hidden" />
                 </label>
             </div> 
             
@@ -98,8 +98,6 @@
                 }
 
                 image.src = URL.createObjectURL(file);
-                // image.width = 100 ;
-                // image.height = 100;
 
                 imageContainer.innerHTML = '';
                 imageContainer.appendChild(image);

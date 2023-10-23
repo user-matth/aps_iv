@@ -1,5 +1,7 @@
 from django.urls import path
 from app_aps import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -10,3 +12,6 @@ urlpatterns = [
     path('quicksort', views.quicksort, name='quicksort'),
     path('fill_database/', views.fill_database_with_fake_data, name='fill_database'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

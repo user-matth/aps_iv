@@ -16,11 +16,16 @@ import time
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from queue import LifoQueue
 from operator import attrgetter
+from .forms import GeoLocalizacaoForm
 
 image_width = 640
 image_height = 480
 
 fake = Faker()
+
+def format(num):
+    formatted_number = "{:,.3f}".format(num / 1000)
+    return formatted_number
 
 def home(request):
     geolocalizacoes = GeoLocalizacao.objects.all().order_by('image_name')
@@ -49,36 +54,26 @@ def home(request):
 @csrf_protect
 def create(request):
     if request.method == 'POST':
-        # image = request.FILES['image_blob']
-        # image_data = image.read()
-        image_name = request.POST['image_name']
-        latitude = request.POST['latitude']
-        longitude = request.POST['longitude']
-        altitude = request.POST['altitude']
+        form = GeoLocalizacaoForm(request.POST, request.FILES)
 
-        location = GeoLocalizacao(
-            # image_blob=image_data,
-            image_name=image_name,
-            latitude=latitude,
-            longitude=longitude,
-            altitude=altitude
-        )
+        if form.is_valid():
+            form.save()
+            return redirect('home')
 
-        location.save()
         return render(request, 'home/home.html')
     return render(request, 'home/create.html')
 
 @csrf_protect
 def update(request, id):
     location = get_object_or_404(GeoLocalizacao, id=id)
+
     if request.method == 'POST':
-        location_id = request.POST.get('location_id')
-        location.image_name = request.POST['image_name']
-        location.latitude = request.POST['latitude']
-        location.longitude = request.POST['longitude']
-        location.altitude = request.POST['altitude']
-        location.save()
-        return redirect('home')
+        form = GeoLocalizacaoForm(request.POST, request.FILES, instance=location)  # Pass the instance to update
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = GeoLocalizacaoForm(instance=location)
 
     return render(request, 'home/update.html', {'location': location})
 
@@ -158,6 +153,7 @@ def arvore(request):
     return render(request, 'arvore/arvore.html', {
         'elementos_ordenados': elementos_ordenados,
         'tempo_decorrido': tempo_decorrido,
+        'amount' : format(elementos.count()),
     })
 
 def arvore_res():
@@ -214,5 +210,5 @@ def quicksort(request):
     return render(request, 'quick_sort/quick_sort.html', {
         'elementos_ordenados': sorted_geolocalizacoes,
         'tempo_decorrido': elapsed_time,
-        'amount' : geolocalizacoes.count(),
+        'amount' : format(geolocalizacoes.count()),
     })
