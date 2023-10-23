@@ -17,6 +17,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from queue import LifoQueue
 from operator import attrgetter
 from .forms import GeoLocalizacaoForm
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
 
 image_width = 640
 image_height = 480
@@ -77,7 +80,7 @@ def update(request, id):
 
     return render(request, 'home/update.html', {'location': location})
 
-def delete(id):
+def delete(request, id):
     location = get_object_or_404(GeoLocalizacao, id=id)
     location.delete()
     return redirect('home')
@@ -92,6 +95,7 @@ def generate_fake_image_data(width, height, format):
     return image_binary
 
 def fill_database_with_fake_data(request):
+    image_dir = 'media/media/images'
     for _ in range(10000): 
         png_image_data = generate_fake_image_data(image_width, image_height, 'PNG')
         location = GeoLocalizacao(
@@ -212,26 +216,47 @@ def quicksort(request):
         'tempo_decorrido': elapsed_time,
         'amount' : format(geolocalizacoes.count()),
     })
+    
+def quicksort_res():
+    geolocalizacoes = GeoLocalizacao.objects.all()
 
+    start_time = time.time()
 
+    def quick_sort_algorithm(arr):
+        if len(arr) <= 1:
+            return arr
 
+        pivot = arr[len(arr) // 2]
+        left = [x for x in arr if x.image_name < pivot.image_name]
+        middle = [x for x in arr if x.image_name == pivot.image_name]
+        right = [x for x in arr if x.image_name > pivot.image_name]
+
+        return quick_sort_algorithm(left) + middle + quick_sort_algorithm(right)
+
+    sorted_geolocalizacoes = quick_sort_algorithm(list(geolocalizacoes))
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    return (elapsed_time)
+
+# BUBBLESORT
 def bubblesort(request):
     geolocalizacoes = list(GeoLocalizacao.objects.all().order_by('image_name'))
+    amount = len(geolocalizacoes)
 
     start_time = time.time()
 
     def sorted_bubble_sort(geolocalizacoes):
-        sorted_geolocalizacoes = list(geolocalizacoes)
-        n = len(sorted_geolocalizacoes)
-        steps = []  # Um array para armazenar os estados intermediários da ordenação
+        loc_s = list(geolocalizacoes)
+        n = len(loc_s)
+        steps = [] 
 
         for i in range(n - 1):
             for j in range(0, n - i - 1):
-                if sorted_geolocalizacoes[j].image_name > sorted_geolocalizacoes[j + 1].image_name:
-                    sorted_geolocalizacoes[j], sorted_geolocalizacoes[j + 1] = sorted_geolocalizacoes[j + 1], sorted_geolocalizacoes[j]
-                    # Após cada troca, crie uma cópia das informações ordenadas e adicione-a ao array de etapas
-                    steps.append(list(sorted_geolocalizacoes))
-
+                if loc_s[j].image_name > loc_s[j + 1].image_name:
+                    loc_s[j], loc_s[j + 1] = loc_s[j + 1], loc_s[j]
+                    steps.append(list(loc_s))
         return steps
 
     ordenacao_bubble = sorted_bubble_sort(geolocalizacoes)
@@ -240,18 +265,62 @@ def bubblesort(request):
     elapsed_time = end_time - start_time
     
     items_per_page = 10
-    paginator = Paginator(sorted_geolocalizacoes, items_per_page)
+    paginator = Paginator(geolocalizacoes, items_per_page)
     page = request.GET.get('page')
 
     try:
-        ordenacao_bubble = paginator.page(page)
+        geolocalizacoes = paginator.page(page)
     except PageNotAnInteger:
-        ordenacao_bubble = paginator.page(1)
+        geolocalizacoes = paginator.page(1)
     except EmptyPage:
-        ordenacao_bubble = paginator.page(paginator.num_pages)
-    
-    return render(request, 'bubble_sort/bubble_sort.html', {
-        'elementos_ordenados': ordenacao_bubble,
+        geolocalizacoes = paginator.page(paginator.num_pages)
+        
+    data = {
+        'elementos_ordenados': geolocalizacoes,
         'tempo_decorrido': elapsed_time,
-        'amount' : format(ordenacao_bubble.count()),
-    })
+        'amount' : amount,
+    }
+    
+    return render(request, 'bubble_sort/bubble_sort.html', data)
+
+def bubblesort_res():
+    geolocalizacoes = list(GeoLocalizacao.objects.all().order_by('altitude'))
+    start_time = time.time()
+
+    def sorted_bubble_sort(geolocalizacoes):
+        loc_s = list(geolocalizacoes)
+        n = len(loc_s)
+        steps = [] 
+
+        for i in range(n - 1):
+            for j in range(0, n - i - 1):
+                if loc_s[j].altitude > loc_s[j + 1].altitude:
+                    loc_s[j], loc_s[j + 1] = loc_s[j + 1], loc_s[j]
+                    steps.append(list(loc_s))
+        return steps
+
+    ordenacao_bubble = sorted_bubble_sort(geolocalizacoes)
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    
+    return (elapsed_time)
+
+def relatorio(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="example.pdf"'
+
+    p = canvas.Canvas(response)
+    
+    elapsed_time = bubblesort_res()
+    bubblesort_res_time_str = "{:.2f}".format(elapsed_time)
+    
+    elapsed_time2 = quicksort_res()
+    quicksort_res_time_str2 = "{:.2f}".format(elapsed_time2)
+
+    p.drawString(100, 750, "Tempo estimado para Ordenação tipo Árvore: " + arvore_res())
+    p.drawString(100, 720, "Tempo estimado para Ordenação tipo BubbleSort: " + bubblesort_res_time_str)
+    p.drawString(100, 690, "Tempo estimado para Ordenação tipo BubbleSort: " + quicksort_res_time_str2)
+    p.showPage()
+    p.save()
+    return response
