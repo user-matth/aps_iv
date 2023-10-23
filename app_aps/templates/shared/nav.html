@@ -1,3 +1,9 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="{% static 'js/script.js' %}"></script>
+
+{% include 'shared/loader.html' %}
+
 <div class="sticky top-0 left-0 w-full z-10">
     <nav class="bg-white border-b border-gray-200">
         <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
@@ -52,12 +58,17 @@
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
                 <p class="mb-5 font-normal text-gray-500 ">Você tem certeza que deseja popular o banco de dados com mais 10.000 dados?<br><br>Essa ação pode levar de 5 a 10 minutos</p>
-                <a href="/fill_database" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                    Sim, confirmar
-                </a>
-                <button data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
-                    Não, cancelar
-                </button>
+                <div class="flex justify-center gap-3">
+                    <form action="{% url 'fill_database' %}" method="POST" onsubmit="mostrarCarregamento()">
+                        {% csrf_token %}
+                        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                            Sim, confirmar
+                        </button>
+                    </form>
+                    <button data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
+                        Não, cancelar
+                    </button>
+                </div>
             </div>
         </div>
     </div>

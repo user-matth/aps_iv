@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
     <link rel="icon" type="image/svg+xml" href="https://flowbite.com/docs/images/logo.svg">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}"></script>
     <style>
         * {
             font-family: 'Inter', sans-serif;
@@ -29,7 +32,7 @@
             <button id="toggle-button" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-red-900 focus:outline-none bg-white rounded-lg border border-red-900 hover:bg-red-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-200 float-left">Excluir imagem</button>
         </div>
 
-        <form method="post" action="{% url 'update' location.id %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'update' location.id %}" enctype="multipart/form-data" onsubmit="mostrarCarregamento()">
             {% csrf_token %}
             <input type="hidden" name="location_id" value="{{ location.id }}">
             <div class="mb-6">

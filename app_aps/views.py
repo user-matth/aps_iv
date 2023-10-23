@@ -102,7 +102,7 @@ def fill_database_with_fake_data(request):
             altitude=fake.random_int(min=0, max=1000)
         )
         location.save()
-    return render(request, 'home/home.html')
+    return redirect('home')
     
 # ARVORE BINARIA
 class Node:
