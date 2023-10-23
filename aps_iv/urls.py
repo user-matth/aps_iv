@@ -10,6 +10,7 @@ urlpatterns = [
     path('delete/<int:id>/delete/', views.delete, name='delete'),
     path('arvore', views.arvore, name='arvore'),
     path('quicksort', views.quicksort, name='quicksort'),
+    path('bubblesort', views.bubblesort, name='bubblesort'),
     path('fill_database/', views.fill_database_with_fake_data, name='fill_database'),
 ]
 

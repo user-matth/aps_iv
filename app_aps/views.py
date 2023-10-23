@@ -212,3 +212,46 @@ def quicksort(request):
         'tempo_decorrido': elapsed_time,
         'amount' : format(geolocalizacoes.count()),
     })
+
+
+
+def bubblesort(request):
+    geolocalizacoes = list(GeoLocalizacao.objects.all().order_by('image_name'))
+
+    start_time = time.time()
+
+    def sorted_bubble_sort(geolocalizacoes):
+        sorted_geolocalizacoes = list(geolocalizacoes)
+        n = len(sorted_geolocalizacoes)
+        steps = []  # Um array para armazenar os estados intermediários da ordenação
+
+        for i in range(n - 1):
+            for j in range(0, n - i - 1):
+                if sorted_geolocalizacoes[j].image_name > sorted_geolocalizacoes[j + 1].image_name:
+                    sorted_geolocalizacoes[j], sorted_geolocalizacoes[j + 1] = sorted_geolocalizacoes[j + 1], sorted_geolocalizacoes[j]
+                    # Após cada troca, crie uma cópia das informações ordenadas e adicione-a ao array de etapas
+                    steps.append(list(sorted_geolocalizacoes))
+
+        return steps
+
+    ordenacao_bubble = sorted_bubble_sort(geolocalizacoes)
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    
+    items_per_page = 10
+    paginator = Paginator(sorted_geolocalizacoes, items_per_page)
+    page = request.GET.get('page')
+
+    try:
+        ordenacao_bubble = paginator.page(page)
+    except PageNotAnInteger:
+        ordenacao_bubble = paginator.page(1)
+    except EmptyPage:
+        ordenacao_bubble = paginator.page(paginator.num_pages)
+    
+    return render(request, 'bubble_sort/bubble_sort.html', {
+        'elementos_ordenados': ordenacao_bubble,
+        'tempo_decorrido': elapsed_time,
+        'amount' : format(ordenacao_bubble.count()),
+    })
