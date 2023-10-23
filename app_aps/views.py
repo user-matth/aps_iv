@@ -23,7 +23,7 @@ image_height = 480
 fake = Faker()
 
 def home(request):
-    geolocalizacoes = GeoLocalizacao.objects.all()
+    geolocalizacoes = GeoLocalizacao.objects.all().order_by('image_name')
     
     items_por_pagina = 10  
     paginator = Paginator(geolocalizacoes, items_por_pagina)
@@ -40,35 +40,10 @@ def home(request):
     except EmptyPage:
         pagina_atual = paginator.page(paginator.num_pages)
 
-    # encoded_images = []
-    # for geolocalizacao in pagina_atual:
-    #     if geolocalizacao.image_blob is not None:
-    #         encoded_image = base64.b64encode(geolocalizacao.image_blob).decode('utf-8')
-    #         encoded_images.append(encoded_image)
-    #     else:
-    #         encoded_images.append(None)
-    
-    # results = {
-    #     'Fila': fila_res(),
-    #     'Pilha': pilha_res(),
-    #     'Lista': lista_res(),
-    #     'Arvore': arvore_res(),
-    # }
-
-    # lowest_key = min(results, key=results.get)
-    # lowest_value = results[lowest_key]
-
     return render(request, 'home/home.html', {
         'geolocalizacoes' : pagina_atual, 
-        # 'encoded_images' : encoded_images, 
         'pagina_atual' : pagina_atual, 
         'amout' : geolocalizacoes.count(),
-        # 'fila_res' : fila_res(),
-        # 'pilha_res' : pilha_res(),
-        # 'lista_res' : lista_res(),
-        # 'arvore_res' : arvore_res(),
-        # 'lowest_value' : lowest_value,
-        # 'lowest_key' : lowest_key,
     })
 
 @csrf_protect
@@ -107,27 +82,10 @@ def update(request, id):
 
     return render(request, 'home/update.html', {'location': location})
 
-def delete(request, id):
-    geo_localizacao = get_object_or_404(GeoLocalizacao, id=id)
-    geo_localizacao.delete()
-    return redirect('home')
-    
-
-def patch(request, id):
+def delete(id):
     location = get_object_or_404(GeoLocalizacao, id=id)
-
-    if request.method == 'POST':
-        # Retrieve the ID from the form data
-        location_id = request.POST.get('location_id')
-        location.image_name = request.POST['image_name']
-        location.latitude = request.POST['latitude']
-        location.longitude = request.POST['longitude']
-        location.altitude = request.POST['altitude']
-        location.save()
-        return redirect('success_url')  # Redirect to a success page
-
-    return render(request, 'update_template.html', {'location': location})
-    return render(request, 'home/patch.html')
+    location.delete()
+    return redirect('home')
 
 def generate_fake_image_data(width, height, format):
     image = Image.new('RGB', (width, height))
@@ -152,7 +110,6 @@ def fill_database_with_fake_data(request):
     return render(request, 'home/home.html')
     
 # ARVORE BINARIA
-
 class Node:
     def __init__(self, elemento):
         self.elemento = elemento
@@ -219,3 +176,43 @@ def arvore_res():
     tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
 
     return (tempo_decorrido_formatted)
+
+# QUICKSORT
+def quicksort(request):
+    geolocalizacoes = GeoLocalizacao.objects.all().order_by('image_name')
+
+    start_time = time.time()
+
+    def quick_sort_algorithm(arr):
+        if len(arr) <= 1:
+            return arr
+
+        pivot = arr[len(arr) // 2]
+        left = [x for x in arr if x.image_name < pivot.image_name]
+        middle = [x for x in arr if x.image_name == pivot.image_name]
+        right = [x for x in arr if x.image_name > pivot.image_name]
+
+        return quick_sort_algorithm(left) + middle + quick_sort_algorithm(right)
+
+    sorted_geolocalizacoes = quick_sort_algorithm(list(geolocalizacoes))
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    
+    items_per_page = 10
+    paginator = Paginator(sorted_geolocalizacoes, items_per_page)
+    page = request.GET.get('page')
+
+    try:
+        sorted_geolocalizacoes = paginator.page(page)
+    except PageNotAnInteger:
+        sorted_geolocalizacoes = paginator.page(1)
+    except EmptyPage:
+        sorted_geolocalizacoes = paginator.page(paginator.num_pages)
+
+
+    return render(request, 'quick_sort/quick_sort.html', {
+        'elementos_ordenados': sorted_geolocalizacoes,
+        'tempo_decorrido': elapsed_time,
+        'amount' : geolocalizacoes.count(),
+    })
