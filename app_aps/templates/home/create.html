@@ -28,7 +28,7 @@
             <h2 class="text-2xl font-bold">Criar nova localização</h2>
         </div>
 
-        <form method="post" action="{% url 'store' %}">
+        <form method="post" action="{% url 'create' %}">
             {% csrf_token %}
             <div class="mb-6">
               <label for="image_name" class="block mb-2 text-sm font-medium text-gray-900">Nome da imagem</label>

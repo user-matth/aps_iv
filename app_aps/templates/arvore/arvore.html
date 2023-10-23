@@ -23,7 +23,7 @@
         <div class="flex justify-between items-cecnter mb-4">
             <h2 class="text-2xl font-bold">Ordenar por Árvore</h2>
 
-            <div class="flex items-center gap-3">
+            <!-- <div class="flex items-center gap-3">
                 <form>
                     <div class="flex justify-between w-[600px]">
                         <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
@@ -53,14 +53,12 @@
                         </div>
                     </div>
                 </form>
-    
-                <a href="/create" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Cadastrar</a>
+            </div> -->
+            <div class="p-4 text-sm text-green-800 rounded-lg bg-green-50" role="alert">
+                <span class="font-medium">Tempo percorrido:</span> {{ tempo_decorrido }} segundos para {{ amount }} cadastros.
             </div>
         </div>
 
-        <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50" role="alert">
-            <span class="font-medium">Tempo decorrido:</span> {{ tempo_decorrido }} segundos para {{ amount }} cadastros.
-        </div>
         
         <div class="relative overflow-x-auto">
             <table class="w-full text-sm text-left text-gray-500">
