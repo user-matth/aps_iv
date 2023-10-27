@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,13 @@ SECRET_KEY = 'django-insecure-75m8j55#k5wegyu$(c0v-3b!9r1(h4bvfi$r7qgz25rn2@fe9%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['https://unip.cloud']
 
+=======
+ALLOWED_HOSTS = ['89.117.51.51', 'unip.cloud', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://89.117.51.51', 'https://unip.cloud', 'http://localhost']
+>>>>>>> 9c69e63d9cb7d1c24d45e36c25ce71c545d68511
 
 # Application definition
 
@@ -116,10 +122,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+<<<<<<< HEAD
 STATIC_URL = '/var/www/static/'
+=======
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+>>>>>>> 9c69e63d9cb7d1c24d45e36c25ce71c545d68511
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+<<<<<<< HEAD
 CSRF_TRUSTED_ORIGINS = ['https://unip.cloud']
+=======
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+>>>>>>> 9c69e63d9cb7d1c24d45e36c25ce71c545d68511

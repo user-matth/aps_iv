@@ -16,14 +16,30 @@ import time
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from queue import LifoQueue
 from operator import attrgetter
+from .forms import GeoLocalizacaoForm
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+from django.template import loader
+import asyncio
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from reportlab.pdfgen import canvas
+from asgiref.sync import sync_to_async
+import tempfile
 
 image_width = 640
 image_height = 480
 
 fake = Faker()
 
+def format(num):
+    formatted_number = "{:,.3f}".format(num / 1000)
+    return formatted_number
+
 def home(request):
-    geolocalizacoes = GeoLocalizacao.objects.all()
+    geolocalizacoes = GeoLocalizacao.objects.all().order_by('image_name')
+    
     items_por_pagina = 10  
     paginator = Paginator(geolocalizacoes, items_por_pagina)
 
@@ -39,96 +55,42 @@ def home(request):
     except EmptyPage:
         pagina_atual = paginator.page(paginator.num_pages)
 
-    encoded_images = []
-    for geolocalizacao in pagina_atual:
-        if geolocalizacao.image_blob is not None:
-            encoded_image = base64.b64encode(geolocalizacao.image_blob).decode('utf-8')
-            encoded_images.append(encoded_image)
-        else:
-            encoded_images.append(None)
-    
-    results = {
-        'Fila': fila_res(),
-        'Pilha': pilha_res(),
-        'Lista': lista_res(),
-        'Arvore': arvore_res(),
-    }
-
-    lowest_key = min(results, key=results.get)
-    lowest_value = results[lowest_key]
-
     return render(request, 'home/home.html', {
         'geolocalizacoes' : pagina_atual, 
-        'encoded_images' : encoded_images, 
         'pagina_atual' : pagina_atual, 
         'amout' : geolocalizacoes.count(),
-        'fila_res' : fila_res(),
-        'pilha_res' : pilha_res(),
-        'lista_res' : lista_res(),
-        'arvore_res' : arvore_res(),
-        'lowest_value' : lowest_value,
-        'lowest_key' : lowest_key,
     })
 
 @csrf_protect
 def create(request):
+    if request.method == 'POST':
+        form = GeoLocalizacaoForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+        return render(request, 'home/home.html')
     return render(request, 'home/create.html')
 
 @csrf_protect
 def update(request, id):
     location = get_object_or_404(GeoLocalizacao, id=id)
+
     if request.method == 'POST':
-        location_id = request.POST.get('location_id')
-        location.image_name = request.POST['image_name']
-        location.latitude = request.POST['latitude']
-        location.longitude = request.POST['longitude']
-        location.altitude = request.POST['altitude']
-        location.save()
-        return redirect('home')
+        form = GeoLocalizacaoForm(request.POST, request.FILES, instance=location)  # Pass the instance to update
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = GeoLocalizacaoForm(instance=location)
 
     return render(request, 'home/update.html', {'location': location})
 
 def delete(request, id):
-    geo_localizacao = get_object_or_404(GeoLocalizacao, id=id)
-    geo_localizacao.delete()
-    return redirect('home')
-
-@csrf_protect
-def store(request):
-    if request.method == 'POST':
-        # image = request.FILES['image_blob']
-        # image_data = image.read()
-        image_name = request.POST['image_name']
-        latitude = request.POST['latitude']
-        longitude = request.POST['longitude']
-        altitude = request.POST['altitude']
-
-        location = GeoLocalizacao(
-            # image_blob=image_data,
-            image_name=image_name,
-            latitude=latitude,
-            longitude=longitude,
-            altitude=altitude
-        )
-
-        location.save()
-    return render(request, 'home/store.html')
-
-def patch(request, id):
     location = get_object_or_404(GeoLocalizacao, id=id)
-
-    if request.method == 'POST':
-        # Retrieve the ID from the form data
-        location_id = request.POST.get('location_id')
-        location.image_name = request.POST['image_name']
-        location.latitude = request.POST['latitude']
-        location.longitude = request.POST['longitude']
-        location.altitude = request.POST['altitude']
-        location.save()
-        return redirect('success_url')  # Redirect to a success page
-
-    return render(request, 'update_template.html', {'location': location})
-    return render(request, 'home/patch.html')
+    location.delete()
+    return redirect('home')
 
 def generate_fake_image_data(width, height, format):
     image = Image.new('RGB', (width, height))
@@ -140,6 +102,7 @@ def generate_fake_image_data(width, height, format):
     return image_binary
 
 def fill_database_with_fake_data(request):
+    image_dir = 'media/media/images'
     for _ in range(10000): 
         png_image_data = generate_fake_image_data(image_width, image_height, 'PNG')
         location = GeoLocalizacao(
@@ -150,123 +113,9 @@ def fill_database_with_fake_data(request):
             altitude=fake.random_int(min=0, max=1000)
         )
         location.save()
-    return render(request, 'home/home.html')
-
-# FILA
-
-class GeoLocation:
-    def __init__(self, image_name, latitude, longitude, altitude):
-        self.image_name = image_name
-        self.latitude = latitude
-        self.longitude = longitude
-        self.altitude = altitude
-
-def fila(request):
-    tempo_inicial = time.time()
-    fila = Queue()
-
-    geolocalizacoes = GeoLocalizacao.objects.all()
-
-    for loc in geolocalizacoes:
-        fila.put(GeoLocation(loc.image_name, loc.latitude, loc.longitude, loc.altitude))
-
-    elementos_ordenados = []
-    while not fila.empty():
-        elementos_ordenados.append(fila.get())
-    elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: loc.altitude)
-
-    tempo_final = time.time()
-    tempo_decorrido = tempo_final - tempo_inicial
-
-    items_por_pagina = 10
-    paginator = Paginator(elementos_ordenados, items_por_pagina)
-
-    try:
-        numero_pagina = int(request.GET.get('page', 1))
-        if numero_pagina < 1:
-            raise ValueError
-    except ValueError:
-        numero_pagina = 1
-
-    try:
-        pagina_atual = paginator.page(numero_pagina)
-    except EmptyPage:
-        pagina_atual = paginator.page(paginator.num_pages)
-
-    return render(request, 'fila/fila.html', {'elementos_ordenados': pagina_atual, 'tempo_decorrido': tempo_decorrido, 'amount': geolocalizacoes.count(), 'pagina_atual': pagina_atual})
-
-# PILHA
-
-def pilha(request):
-    tempo_inicial = time.time()
-    geolocalizacoes = GeoLocalizacao.objects.all()
-
-    pilha = LifoQueue()
-    for loc in geolocalizacoes:
-        pilha.put(loc)
-
-    elementos_ordenados = []
-    while not pilha.empty():
-        elementos_ordenados.append(pilha.get())
-
-    elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: loc.altitude)
-
-    tempo_final = time.time()
-
-    tempo_decorrido = tempo_final - tempo_inicial
-
-    items_por_pagina = 10
-    paginator = Paginator(elementos_ordenados, items_por_pagina)
-
-    try:
-        numero_pagina = int(request.GET.get('page', 1))
-        if numero_pagina < 1:
-            raise ValueError
-    except ValueError:
-        numero_pagina = 1
-
-    try:
-        pagina_atual = paginator.page(numero_pagina)
-    except EmptyPage:
-        pagina_atual = paginator.page(paginator.num_pages)
-
-    return render(request, 'pilha/pilha.html', {'elementos_ordenados': pagina_atual, 'tempo_decorrido': tempo_decorrido, 'amount': geolocalizacoes.count(), 'pagina_atual': pagina_atual})
-
-# LISTA
-
-def lista(request):
-    tempo_inicial = time.time()
-    elementos = GeoLocalizacao.objects.all()
-
-    elementos_ordenados = sorted(elementos, key=attrgetter('image_name'))
-
-    items_por_pagina = 10
-    paginator = Paginator(elementos_ordenados, items_por_pagina)
-
-    try:
-        numero_pagina = int(request.GET.get('page', 1))
-        if numero_pagina < 1:
-            raise ValueError
-    except ValueError:
-        numero_pagina = 1
-
-    try:
-        pagina_atual = paginator.page(numero_pagina)
-    except EmptyPage:
-        pagina_atual = paginator.page(paginator.num_pages)
-        
-    tempo_final = time.time()
-    tempo_decorrido = tempo_final - tempo_inicial
-
-    return render(request, 'lista/lista.html', {
-        'elementos_ordenados': pagina_atual,
-        'tempo_decorrido': tempo_decorrido,
-        'amount': elementos.count(),
-        'pagina_atual': pagina_atual,
-    })
+    return redirect('home')
     
 # ARVORE BINARIA
-
 class Node:
     def __init__(self, elemento):
         self.elemento = elemento
@@ -315,62 +164,8 @@ def arvore(request):
     return render(request, 'arvore/arvore.html', {
         'elementos_ordenados': elementos_ordenados,
         'tempo_decorrido': tempo_decorrido,
+        'amount' : format(elementos.count()),
     })
-    
-    
-def fila_res():
-    tempo_inicial = time.time()
-    fila = Queue()
-
-    geolocalizacoes = GeoLocalizacao.objects.all()
-
-    for loc in geolocalizacoes:
-        fila.put(GeoLocation(loc.image_name, loc.latitude, loc.longitude, loc.altitude))
-
-    elementos_ordenados = []
-    while not fila.empty():
-        elementos_ordenados.append(fila.get())
-    elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: loc.altitude)
-
-    tempo_final = time.time()
-    tempo_decorrido = tempo_final - tempo_inicial
-    tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
-
-    return (tempo_decorrido_formatted)
-
-def pilha_res():
-    tempo_inicial = time.time()
-    geolocalizacoes = GeoLocalizacao.objects.all()
-
-    pilha = LifoQueue()
-    for loc in geolocalizacoes:
-        pilha.put(loc)
-
-    elementos_ordenados = []
-    while not pilha.empty():
-        elementos_ordenados.append(pilha.get())
-
-    elementos_ordenados = sorted(elementos_ordenados, key=lambda loc: len(loc.image_blob) if loc.image_blob else 0)
-
-    tempo_final = time.time()
-    tempo_decorrido = tempo_final - tempo_inicial
-    tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
-
-    return (tempo_decorrido_formatted)
-
-
-def lista_res():
-    tempo_inicial = time.time()
-    
-    elementos = GeoLocalizacao.objects.all()
-    elementos_ordenados = sorted(elementos, key=lambda loc: len(loc.image_blob) if loc.image_blob else 0)
-    
-    tempo_final = time.time()
-    tempo_decorrido = tempo_final - tempo_inicial
-    tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
-    
-    return tempo_decorrido_formatted
-
 
 def arvore_res():
     tempo_inicial = time.time()
@@ -388,3 +183,152 @@ def arvore_res():
     tempo_decorrido_formatted = f'{tempo_decorrido:.2f}'
 
     return (tempo_decorrido_formatted)
+
+# QUICKSORT
+def quicksort(request):
+    geolocalizacoes = GeoLocalizacao.objects.all().order_by('image_name')
+
+    start_time = time.time()
+
+    def quick_sort_algorithm(arr):
+        if len(arr) <= 1:
+            return arr
+
+        pivot = arr[len(arr) // 2]
+        left = [x for x in arr if x.image_name < pivot.image_name]
+        middle = [x for x in arr if x.image_name == pivot.image_name]
+        right = [x for x in arr if x.image_name > pivot.image_name]
+
+        return quick_sort_algorithm(left) + middle + quick_sort_algorithm(right)
+
+    sorted_geolocalizacoes = quick_sort_algorithm(list(geolocalizacoes))
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    
+    items_per_page = 10
+    paginator = Paginator(sorted_geolocalizacoes, items_per_page)
+    page = request.GET.get('page')
+
+    try:
+        sorted_geolocalizacoes = paginator.page(page)
+    except PageNotAnInteger:
+        sorted_geolocalizacoes = paginator.page(1)
+    except EmptyPage:
+        sorted_geolocalizacoes = paginator.page(paginator.num_pages)
+
+
+    return render(request, 'quick_sort/quick_sort.html', {
+        'elementos_ordenados': sorted_geolocalizacoes,
+        'tempo_decorrido': elapsed_time,
+        'amount' : format(geolocalizacoes.count()),
+    })
+    
+def quicksort_res():
+    geolocalizacoes = GeoLocalizacao.objects.all()
+
+    start_time = time.time()
+
+    def quick_sort_algorithm(arr):
+        if len(arr) <= 1:
+            return arr
+
+        pivot = arr[len(arr) // 2]
+        left = [x for x in arr if x.image_name < pivot.image_name]
+        middle = [x for x in arr if x.image_name == pivot.image_name]
+        right = [x for x in arr if x.image_name > pivot.image_name]
+
+        return quick_sort_algorithm(left) + middle + quick_sort_algorithm(right)
+
+    sorted_geolocalizacoes = quick_sort_algorithm(list(geolocalizacoes))
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    return (elapsed_time)
+
+# BUBBLESORT
+def bubblesort(request):
+    geolocalizacoes = list(GeoLocalizacao.objects.all().order_by('image_name'))
+    amount = len(geolocalizacoes)
+
+    start_time = time.time()
+
+    def sorted_bubble_sort(geolocalizacoes):
+        loc_s = list(geolocalizacoes)
+        n = len(loc_s)
+        steps = [] 
+
+        for i in range(n - 1):
+            for j in range(0, n - i - 1):
+                if loc_s[j].image_name > loc_s[j + 1].image_name:
+                    loc_s[j], loc_s[j + 1] = loc_s[j + 1], loc_s[j]
+                    steps.append(list(loc_s))
+        return steps
+
+    ordenacao_bubble = sorted_bubble_sort(geolocalizacoes)
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    
+    items_per_page = 10
+    paginator = Paginator(geolocalizacoes, items_per_page)
+    page = request.GET.get('page')
+
+    try:
+        geolocalizacoes = paginator.page(page)
+    except PageNotAnInteger:
+        geolocalizacoes = paginator.page(1)
+    except EmptyPage:
+        geolocalizacoes = paginator.page(paginator.num_pages)
+        
+    data = {
+        'elementos_ordenados': geolocalizacoes,
+        'tempo_decorrido': elapsed_time,
+        'amount' : amount,
+    }
+    
+    return render(request, 'bubble_sort/bubble_sort.html', data)
+
+def bubblesort_res():
+    geolocalizacoes = list(GeoLocalizacao.objects.all().order_by('altitude'))
+    start_time = time.time()
+
+    def sorted_bubble_sort(geolocalizacoes):
+        loc_s = list(geolocalizacoes)
+        n = len(loc_s)
+        steps = [] 
+
+        for i in range(n - 1):
+            for j in range(0, n - i - 1):
+                if loc_s[j].altitude > loc_s[j + 1].altitude:
+                    loc_s[j], loc_s[j + 1] = loc_s[j + 1], loc_s[j]
+                    steps.append(list(loc_s))
+        return steps
+
+    ordenacao_bubble = sorted_bubble_sort(geolocalizacoes)
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    
+    return (elapsed_time)
+
+def relatorio(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="relatorio.pdf"'
+
+    p = canvas.Canvas(response)
+    
+    elapsed_time = bubblesort_res()
+    bubblesort_res_time_str = "{:.2f}".format(elapsed_time)
+    
+    elapsed_time2 = quicksort_res()
+    quicksort_res_time_str2 = "{:.2f}".format(elapsed_time2)
+
+    p.drawString(100, 750, "Tempo estimado para Ordenação tipo Árvore: " + arvore_res())
+    p.drawString(100, 720, "Tempo estimado para Ordenação tipo BubbleSort: " + bubblesort_res_time_str)
+    p.drawString(100, 690, "Tempo estimado para Ordenação tipo BubbleSort: " + quicksort_res_time_str2)
+    p.showPage()
+    p.save()
+    
+    return response

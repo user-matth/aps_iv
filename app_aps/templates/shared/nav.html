@@ -1,13 +1,22 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="{% static 'js/script.js' %}"></script>
+
+{% include 'shared/loader.html' %}
+
 <div class="sticky top-0 left-0 w-full z-10">
     <nav class="bg-white border-b border-gray-200">
         <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
-            <a href="https://flowbite.com" class="flex items-center">
+            <a href="/" class="flex items-center">
                 <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="APS Logo" />
                 <span class="self-center text-2xl font-bold whitespace-nowrap">APS IV</span>
             </a>
-            <button data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5" type="button">
-                Popular DB
-            </button>
+            <div class="flex gap-3">
+                <button onclick="window.location.href = `/create`;" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Cadastrar</button>
+                <button data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5" type="button">
+                    Popular DB
+                </button>
+            </div>
         </div>
     </nav>
     <nav class="bg-gray-50 border-b border-gray-200">
@@ -18,16 +27,16 @@
                         <a href="/" class="text-gray-900 hover:underline" aria-current="page">Home</a>
                     </li>
                     <li>
-                        <a href="/fila" class="text-gray-900 hover:underline">Fila</a>
+                        <a href="/bubblesort" class="text-gray-900 hover:underline" onclick="mostrarCarregamento()">Bubble Sort</a>
                     </li>
                     <li>
-                        <a href="/pilha" class="text-gray-900 hover:underline">Pilha</a>
+                        <a href="/quicksort" class="text-gray-900 hover:underline" onclick="mostrarCarregamento()">Quick Sort</a>
                     </li>
                     <li>
-                        <a href="/lista" class="text-gray-900 hover:underline">Lista</a>
+                        <a href="/arvore" class="text-gray-900 hover:underline" onclick="mostrarCarregamento()">Árvore</a>
                     </li>
                     <li>
-                        <a href="/arvore" class="text-gray-900 hover:underline">Árvore</a>
+                        <a href="/relatorio" class="text-gray-900 hover:underline relatorio" onclick="mostrarCarregamento()">Relatório</a>
                     </li>
                 </ul>
             </div>
@@ -49,13 +58,28 @@
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
                 <p class="mb-5 font-normal text-gray-500 ">Você tem certeza que deseja popular o banco de dados com mais 10.000 dados?<br><br>Essa ação pode levar de 5 a 10 minutos</p>
-                <a href="/fill_database" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                    Sim, confirmar
-                </a>
-                <button data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
-                    Não, cancelar
-                </button>
+                <div class="flex justify-center gap-3">
+                    <form action="{% url 'fill_database' %}" method="POST" onsubmit="mostrarCarregamento()">
+                        {% csrf_token %}
+                        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                            Sim, confirmar
+                        </button>
+                    </form>
+                    <button data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
+                        Não, cancelar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function pararLoad() {
+        setTimeout(function() {
+            ocultarCarregamento();
+        }, 5000);
+    }
+    pararLoad();
+</script>

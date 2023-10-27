@@ -22,7 +22,6 @@
     <div class="px-4 py-8 max-w-screen-xl mx-auto">
         <div class="flex justify-between items-cecnter mb-4">
             <h2 class="text-2xl font-bold">Home</h2>
-
             <div class="flex items-center gap-3">
                 <form>
                     <div class="flex justify-between w-[600px]">
@@ -54,85 +53,8 @@
                     </div>
                 </form>
     
-                <a href="/create" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Cadastrar</a>
             </div>
         </div>
-
-        <div class="flex mb-6 gap-4">
-            <div class="w-full relative max-w-sm border relative p-10 border-gray-200 rounded-lg {% if lowest_key == 'Fila' %}bg-emerald-50{% else %}bg-white{% endif %}">
-                {% if lowest_key == 'Fila' %}
-                    <span class="inline-flex items-center absolute top-4 right-4 rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                        mais rápido
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 ms-1">
-                            <path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" />
-                        </svg>                      
-                    </span>
-                {% endif %}
-                <div class="flex flex-col items-center justify-center h-full w-full">
-                    <h5 class="mb-1 text-xl font-medium text-gray-900">Fila</h5>
-                    <span class="text-md text-gray-500">{{ amout }} dados</span>
-                    <span class="text-sm text-gray-900">aprox. <span class="text-lime-600 font-medium">{{ fila_res }}</span> segundos</span>
-                    <div class="flex mt-4 space-x-3 md:mt-6">
-                        <a href="/fila" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Iniciar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full relative max-w-sm border p-10 border-gray-200 rounded-lg {% if lowest_key == 'Pilha' %}bg-emerald-50{% else %}bg-white{% endif %}">
-                {% if lowest_key == 'Pilha' %}
-                    <span class="inline-flex items-center absolute top-4 right-4 rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                        mais rápido
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 ms-1">
-                            <path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" />
-                        </svg>
-                    </span>
-                {% endif %}
-                <div class="flex flex-col items-center">
-                    <h5 class="mb-1 text-xl font-medium text-gray-900">Pilha</h5>
-                    <span class="text-md text-gray-500">{{ amout }} dados</span>
-                    <span class="text-sm text-gray-900">aprox. <span class="text-lime-600 font-medium">{{ pilha_res }}</span> segundos</span>
-                    <div class="flex mt-4 space-x-3 md:mt-6">
-                        <a href="/pilha" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Iniciar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full relative max-w-sm border p-10 border-gray-200 rounded-lg {% if lowest_key == 'Lista' %}bg-emerald-50{% else %}bg-white{% endif %}">
-                {% if lowest_key == 'Lista' %}
-                    <span class="inline-flex items-center absolute top-4 right-4 rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                        mais rápido
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 ms-1">
-                            <path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" />
-                        </svg>                      
-                    </span>
-                {% endif %}
-                <div class="flex flex-col items-center">
-                    <h5 class="mb-1 text-xl font-medium text-gray-900">Lista</h5>
-                    <span class="text-md text-gray-500">{{ amout }} dados</span>
-                    <span class="text-sm text-gray-900">aprox. <span class="text-lime-600 font-medium">{{ lista_res }}</span> segundos</span>
-                    <div class="flex mt-4 space-x-3 md:mt-6">
-                        <a href="/lista" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Iniciar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full relative max-w-sm border p-10 border-gray-200 rounded-lg {% if lowest_key == 'Arvore' %}bg-emerald-50{% else %}bg-white{% endif %}">
-                {% if lowest_key == 'Arvore' %}
-                    <span class="inline-flex items-center absolute top-4 right-4 rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                        mais rápido
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 ms-1">
-                            <path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" />
-                        </svg>                      
-                    </span>
-                {% endif %}
-                <div class="flex flex-col items-center">
-                    <h5 class="mb-1 text-xl font-medium text-gray-900">Árvore</h5>
-                    <span class="text-md text-gray-500">{{ amout }} dados</span>
-                    <span class="text-sm text-gray-900">aprox. <span class="text-lime-600 font-medium">{{ arvore_res }}</span> segundos</span>
-                    <div class="flex mt-4 space-x-3 md:mt-6">
-                        <a href="/arvore" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Iniciar</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 
         <div class="relative overflow-x-auto">
             <table class="w-full text-sm text-left text-gray-500">
@@ -165,7 +87,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                     <path fill-rule="evenodd" d="M1 5.25A2.25 2.25 0 013.25 3h13.5A2.25 2.25 0 0119 5.25v9.5A2.25 2.25 0 0116.75 17H3.25A2.25 2.25 0 011 14.75v-9.5zm1.5 5.81v3.69c0 .414.336.75.75.75h13.5a.75.75 0 00.75-.75v-2.69l-2.22-2.219a.75.75 0 00-1.06 0l-1.91 1.909.47.47a.75.75 0 11-1.06 1.06L6.53 8.091a.75.75 0 00-1.06 0l-2.97 2.97zM12 7a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd" />
                                 </svg>
-                                <!-- <img src="data:image/png;base64,{{ encoded_images.forloop.counter0 }}" alt="Image"> -->
+                                <!-- <img src="{{ location.image.url }}" alt="{{ location.image_name }}" class="w-20 h-20 object-cover"> -->
                             </th>
                             <td class="px-6 py-4">
                                 {{ location.image_name }}
@@ -180,24 +102,22 @@
                                 {{ location.altitude }}
                             </td>
                             <td class="px-6 py-4 flex gap-3">
-                                <button type="button" onclick="toggleModal(`{{ location.image_name }}`, `{{ location.latitude }}`, `{{ location.longitude }}`, `{{ location.altitude }}`)" data-modal-target="crypto-modal" data-modal-toggle="crypto-modal" class="font-medium text-black">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                        <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                                        <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                    </svg>                                      
+                                <button type="button" onclick="toggleModal(`{{ location.image_name }}`, `{{ location.latitude }}`, `{{ location.longitude }}`, `{{ location.altitude }}`, `{{ location.image.url }}`)" data-modal-target="crypto-modal" data-modal-toggle="crypto-modal" class="font-medium text-black">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      </svg>                                                                         
                                 </button>
-                                <a href="{% url 'update' id=location.id %}" class="font-medium text-blue-600">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                        <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
-                                        <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
-                                    </svg>                                      
+                                <a href="{% url 'update' id=location.id %}" class="font-medium text-black">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                    </svg>
                                 </a>
                                 <button data-modal-target="delete-modal" data-modal-toggle="delete-modal" class="text-red-900" onclick="deleteModal('{{ location.id }}')" type="button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                        <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
-                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                    </svg>                                      
                                 </button>
-  
                             </td>
                         </tr>
                     {% endfor %}
@@ -206,7 +126,7 @@
         </div>
         <div class="flex flex-row items-center justify-between my-6">
             <span class="text-sm text-gray-700">
-                Mostrando de <span class="font-semibold text-gray-900">{{ pagina_atual.number }}</span> a <span class="font-semibold text-gray-900">{{ pagina_atual.number }}0</span> de <span class="font-semibold text-gray-900">{{ pagina_atual.paginator.num_pages }}</span> cadastros
+                Página <span class="font-semibold text-gray-900">{{ pagina_atual.number }}</span> de <span class="font-semibold text-gray-900">{{ amout }}</span> cadastros
             </span>
             <div class="inline-flex items-center mt-2 xs:mt-0">
                 {% if pagina_atual.has_previous %}
@@ -251,11 +171,11 @@
                 <!-- Modal body -->
                 <div class="p-6">
                     
-                    <img class="w-full h-full rounded-lg" src="{% static 'images/satellitee.jpg' %}" alt="">
+                    <img id="imageElement" class="w-full h-full rounded-lg" src="{% static 'images/satellitee.jpg' %}" alt="">
 
                     <ul class="my-4 space-y-3">
                         <li>
-                            <a href="https://www.unip.br" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
+                            <a class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                   </svg>                                  
@@ -264,7 +184,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.unip.br" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
+                            <a class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                                   </svg>                                  
@@ -273,7 +193,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.unip.br" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
+                            <a class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
                                   </svg>                                  
@@ -282,7 +202,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.unip.br" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
+                            <a class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
                                   </svg>                                                                  
@@ -292,7 +212,7 @@
                         </li>
                     </ul>
                     <div>
-                        <a href="https://www.unip.br" class="inline-flex items-center text-xs font-normal text-gray-500 hover:underline">
+                        <a class="inline-flex items-center text-xs font-normal text-gray-500 hover:underline">
                             <svg class="w-3 h-3 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.529 7.988a2.502 2.502 0 0 1 5 .191A2.441 2.441 0 0 1 10 10.582V12m-.01 3.008H10M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                             </svg>
@@ -331,9 +251,10 @@
     <script>
         var locationId = null;
         var globalId;
+        var updateId = 0;
 
-        function toggleModal(name, latitude, longitude, altitude) {
-            console.log(name, latitude, longitude, altitude)
+        function toggleModal(name, latitude, longitude, altitude, image) {
+            console.log(name, latitude, longitude, altitude, image)
             var dataName = document.getElementById('dataName');
             dataName.innerHTML = name;
             var dataLatitude = document.getElementById('dataLatitude');
@@ -342,6 +263,8 @@
             dataLongitude.innerHTML = longitude;
             var dataAltitude = document.getElementById('dataAltitude');
             dataAltitude.innerHTML = altitude;
+            var imageElement = document.getElementById('imageElement');
+            imageElement.src = image;
         }
         function filterTable() {
             var searchInput = document.getElementById('search-dropdown');
@@ -358,12 +281,22 @@
             });
         }
 
+        function updateButton(num) {
+            updateId = num;
+            document.getElementById("updateIdSpan").innerHTML = updateId;
+        }
+
+        function update() {
+            var editUrl = "{% url 'update' id=0 %}".replace("0", updateId);
+            window.location.href = editUrl;
+        }
+
         function deleteModal(id) {
             locationId = id;
             globalId = locationId;
         }
         function deleteLocation() {
-            window.location.href = `/delete/${locationId}/delete`;
+            window.location.href = `/delete/${locationId}`;
         }
         
     </script>
