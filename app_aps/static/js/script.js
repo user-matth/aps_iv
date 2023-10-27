@@ -4,6 +4,7 @@ function mostrarCarregamento() {
     loading.style.display = "block";
 }
 
+
 function ocultarCarregamento() {
     var loading = document.getElementById("loader-wrapper");
     loading.style.display = "none";
