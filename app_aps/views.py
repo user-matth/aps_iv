@@ -20,6 +20,13 @@ from .forms import GeoLocalizacaoForm
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
+from django.template import loader
+import asyncio
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from reportlab.pdfgen import canvas
+from asgiref.sync import sync_to_async
+import tempfile
 
 image_width = 640
 image_height = 480
@@ -308,7 +315,7 @@ def bubblesort_res():
 
 def relatorio(request):
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="example.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="relatorio.pdf"'
 
     p = canvas.Canvas(response)
     
@@ -323,4 +330,5 @@ def relatorio(request):
     p.drawString(100, 690, "Tempo estimado para Ordenação tipo BubbleSort: " + quicksort_res_time_str2)
     p.showPage()
     p.save()
+    
     return response

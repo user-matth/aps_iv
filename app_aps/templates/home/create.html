@@ -78,6 +78,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
     <script>
+        const fileInput = document.getElementById('dropzone-file');
+        const imageContainer = document.getElementById('image-container');
+        var uiContainer1 = document.querySelector('.ui-container1');
+        var uiContainer2 = document.querySelector('.ui-container2');
+
         document.addEventListener('DOMContentLoaded', function () {
             if (uiContainer2) {
                 uiContainer2.classList.add('hidden');
